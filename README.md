@@ -1,2 +1,3 @@
-# alexa-skill-set
-Getting started with Alexa Skill set
+# alexa-skills-kit
+
+Getting started with Alexa Skills kit
