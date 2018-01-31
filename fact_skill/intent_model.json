@@ -1,0 +1,29 @@
+{
+  "languageModel": {
+    "intents": [
+      {
+        "name": "AMAZON.CancelIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.HelpIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.StopIntent",
+        "samples": []
+      },
+      {
+        "name": "GetFactIntent",
+        "samples": [
+          "give me a fact",
+          "tell me something",
+          "tell me a fact",
+          "surprise me"
+        ],
+        "slots": []
+      }
+    ],
+    "invocationName": "my school"
+  }
+}
