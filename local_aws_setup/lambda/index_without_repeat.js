@@ -136,7 +136,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
     'CityChainIntent': function () {
 
         // storing current intent because it may get lost in promises
-        const intent = this;
+        var intent = this;
 
         var city = obtainUserCity(this.event.request.intent.slots);
         if(city === "undef"){
@@ -179,6 +179,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
 
         rp(validateUserInputOptions)
             .then(function (response) {
+                
                 var jsonUserCityResponse = JSON.parse(response);
                 console.log('Entire city log is ::::::::::::::::::::::::::::::: done');
                 //console.log(prettyJSON(jsonUserCityResponse));
@@ -228,9 +229,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                 var userCityFullName = userCity.long_name;
                 var user_place_id = jsonUserCityResponse.results[0].place_id;
 
-                console.log("already used is : ", intent.attributes['alreadyUsed'], ":::::::::::::::::::");
+                console.log("already used is : ", this.attributes['alreadyUsed'], ":::::::::::::::::::");
                 
-
                 //var arr = intent.attributes['alreadyUsed'] ;
                 if(intent.attributes['alreadyUsed'] == undefined){
                     intent.attributes['alreadyUsed'] = [];

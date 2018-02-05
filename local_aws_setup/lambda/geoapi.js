@@ -5,6 +5,8 @@ global and country specific
 sample req -
 https://maps.googleapis.com/maps/api/geocode/json?address=dadar&key=AIzaSyBrcXZU23NAZSDGB3OB1z06SetjvZ8-mL4
 
+dynamic componenents - 
+https://maps.googleapis.com/maps/api/geocode/json?address=india&key=AIzaSyBrcXZU23NAZSDGB3OB1z06SetjvZ8-mL4&components=
 
 maybe also  handle
 status = OVER_QUERY_LIMIT 
