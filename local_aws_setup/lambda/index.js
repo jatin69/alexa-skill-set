@@ -80,7 +80,7 @@ var startGameHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
     },
     'AMAZON.YesIntent': function () {
         let prompt = 'Hey, Welcome to Atlas adventure ! ' +
-                'The Game has two modes, COUNTRY mode, and WORLD mode.' +
+                'The Game has two modes, COUNTRY mode, and WORLD mode. ' +
                 'In country Mode, We\'ll set a country limit. All the places we say will have to be from that country. ' +
                 '<say-as interpret-as = "interjection"> OR </say-as> ' +
                 'We can Play in World Mode, where we are free to say any place in the world. ' +
@@ -133,7 +133,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
         console.log("Inside city chain of choose mode");
         const city = obtainUserCity(this.event.request.intent.slots);
 
-        if (city == "world") {
+        if (city === "world") {
             console.log("world mode inside choose mode");
             let prompt = '<say-as interpret-as = "interjection">I see ! You have an eye on the world. </say-as>' +
                     'So shall we start the game ? ';
@@ -142,35 +142,59 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             console.log("attributes  ", this.attributes['gameMode']);
             this.emit(':ask', prompt, reprompt);
         } else {
-
-            // gotta replace it with google api logic >> error buggy maybe
-            // is it a valid country ??
-            // check with google api as well as ISO code
-            // only ISO will alos do
-            let country_name = city;
-            var options = {
+            var validateUserInputOptions = {
                 method: 'GET',
-                url: 'https://restcountries.eu/rest/v2/name/' + country_name,
+                url: 'https://maps.googleapis.com/maps/api/geocode/json',
+                qs:
+                        {
+                            address: city,
+                            key: 'AIzaSyBrcXZU23NAZSDGB3OB1z06SetjvZ8-mL4'
+                        },
+                headers:
+                        {
+                            'cache-control': 'no-cache'
+                        }
             };
             const intent = this;
-
-            rp(options)
+            rp(validateUserInputOptions)
                     .then(function (response) {
-                        var result = JSON.parse(response);
 
-                        if (result.length == undefined) {
-                            console.log("Wrong country, jump to unhandle")
+                        const jsonUserCityResponse = JSON.parse(response);
+                        //console.log(prettyJSON(jsonUserCityResponse));
+                        const responseStatus = jsonUserCityResponse.status;
+                        //console.log(responseStatus);
+                        if (responseStatus !== "OK") {
+                            console.log("Yo man, nothing found");
+                            console.log('Error' + error);
+                            intent.emit('Unhandled');
+                        }
+
+                        /* List of places can be found at https://developers.google.com/maps/documentation/geocoding/intro  */
+                        const validPlacesList = ['country']
+
+                        let matchType = jsonUserCityResponse.results[0].types;
+                        let isvalid = matchType.some(r => validPlacesList.includes(r))
+                        //let isvalid = _.includes(jsonUserCityResponse.results[0].types, locality )
+
+                        if (!isvalid) {
                             let prompt = '<say-as interpret-as = "interjection">Hmmm</say-as> I haven\'t heard about this country' +
                                     'Choose some other country or just choose the WORLD mode.';
                             let reprompt = "Choose a mode by saying 'World' or a country name .";
                             intent.emit(':ask', prompt, reprompt);
+                        } else {
+                            console.log("Place is Valid.");
                         }
 
-                        var resultCountry = _.find(result, function (ob) {
-                            return _.lowerCase(ob.name) === _.lowerCase(country_name);
-                        });
-                        console.log("found country code", resultCountry.alpha2Code);
-                        intent.attributes['gameMode'] = resultCountry.alpha2Code;
+                        let userCity = _.find(jsonUserCityResponse.results[0].address_components,
+                                function (o) {
+                                    return arrayContainsArray(o.types, jsonUserCityResponse.results[0].types);
+                                    //return _.includes(o.types, 'locality' ); 
+                                });
+
+                        const alpha2Code = userCity.short_name;
+                        let country_name = userCity.long_name;
+                        intent.attributes['gameMode'] = alpha2Code;
+                        console.log("country code is : ", alpha2Code);
                         console.log("valid country mode");
                         let prompt = '<say-as interpret-as = "interjection">I see ! You Chose ' + country_name + ' </say-as>' +
                                 'So shall we start the game ? ';
@@ -179,7 +203,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                     })
                     .catch(function (error) {
                         console.log('Error' + error);
-                        this.emit('Unhandled');
+                        intent.emit('Unhandled');
                     });
 
         }
@@ -187,8 +211,8 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
     },
     'AMAZON.YesIntent': function () {
         console.log("inside YES");
-        if (this.attributes['gameMode'] == '') {
-            console.log("jump to unhandle")
+        if (this.attributes['gameMode'] === '') {
+            console.log("jump to unhandle");
             this.emit('Unhandled');
         } else {
             let prompt = 'Hello and welcome to Atlas Adventure !! ' +
