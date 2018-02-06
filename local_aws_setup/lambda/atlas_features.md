@@ -1,13 +1,26 @@
 # Feature discussion
 
 
+- computer looses when no result is found for that regions. Be smart in this.
+
+last letter + (Random)
+
+>>> be smart about this random boy
+
+Note that-
+calculate alpha2Code for a country mode only once per session.
+
+-- only allow countries with characters (Alphabets only)
+
 ## MAJOR
 - country mode (verify user just said country => same map stuff) and world mode =>>>>>>>>>>>>>  TWO MODES =>> MAJOR UPDATE
 
 - [done] feature to store already used places 
 	THis happens session to session =>>>>>>> add more utterance to end session
 
-- feature to spell out the place spelling 
+
+- feature to spell out the place spelling => Need clean code for this
+- skip mode : lifelines 
 
 - feature to ask more details about that place => along with its state and country
   so that user can remember the place next time.

@@ -21,7 +21,7 @@ var rp = require('request-promise');
 //let place = "New York City"
 //let place = "Etawah";
 //let place = "New Delhi";
-let place = 'dakpta'
+let place = 'kolkata'
 
 var validateUserInputOptions = {
             method: 'GET',
@@ -31,7 +31,7 @@ var validateUserInputOptions = {
                 address: place,
                 //play worldwide
                 //components: 'country:US',
-                //components: 'country:INDIA',
+                components: 'country:INDIA',
                 key: 'AIzaSyBrcXZU23NAZSDGB3OB1z06SetjvZ8-mL4'
             },
             headers:

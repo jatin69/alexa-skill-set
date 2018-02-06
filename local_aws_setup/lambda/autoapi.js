@@ -1,6 +1,10 @@
 /*
 demo request -
 https://maps.googleapis.com/maps/api/place/autocomplete/json?input=a&key=AIzaSyAIAzhG5a8ndrquII3dNMXAXFNnYWBIcpc
+
+
+fetching alpha 2 code
+https://restcountries.eu/rest/v2/name/
 */
 
 'use strict';
@@ -8,7 +12,7 @@ var _ = require('lodash');
 var request = require('request');
 var rp = require('request-promise');
 
-let lastLetterOfUserCity = 'a';
+let lastLetterOfUserCity = 'i';
 
 // for truly random
 const alphabets = 'abcdefghijklmnopqrstuvwxyz'
@@ -30,6 +34,7 @@ var alexaOutputOptions = {
                     }
                 };
 
+alexaOutputOptions.qs.components = 'country:' + 'in';
 
 rp(alexaOutputOptions)
 	.then( function (response) {
