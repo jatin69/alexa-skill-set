@@ -1,0 +1,137 @@
+{
+  "languageModel": {
+    "types": [
+      {
+        "name": "AMAZON.Country",
+        "values": [
+          {
+            "id": null,
+            "name": {
+              "value": "world",
+              "synonyms": [
+                "world mode"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "intents": [
+      {
+        "name": "AMAZON.CancelIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.HelpIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.NoIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.RepeatIntent",
+        "samples": [
+          "what is it",
+          "once more",
+          "can you please repeat",
+          "repeat",
+          "wait what",
+          "please repeat",
+          "tell me again"
+        ]
+      },
+      {
+        "name": "AMAZON.StopIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.YesIntent",
+        "samples": [
+          "yes",
+          "yes please"
+        ]
+      },
+      {
+        "name": "CityChainIntent",
+        "samples": [
+          "{UScity}",
+          "{USstate}",
+          "{GBcity}",
+          "{GBregion}",
+          "{EUROPEcity}",
+          "{DEregion}",
+          "{country}",
+          "{ATregion}",
+          "{ATcity}"
+        ],
+        "slots": [
+          {
+            "name": "UScity",
+            "type": "AMAZON.US_CITY"
+          },
+          {
+            "name": "USstate",
+            "type": "AMAZON.US_STATE"
+          },
+          {
+            "name": "GBcity",
+            "type": "AMAZON.GB_CITY"
+          },
+          {
+            "name": "GBregion",
+            "type": "AMAZON.GB_REGION"
+          },
+          {
+            "name": "EUROPEcity",
+            "type": "AMAZON.EUROPE_CITY"
+          },
+          {
+            "name": "DEregion",
+            "type": "AMAZON.DE_REGION"
+          },
+          {
+            "name": "country",
+            "type": "AMAZON.Country"
+          },
+          {
+            "name": "ATregion",
+            "type": "AMAZON.AT_REGION"
+          },
+          {
+            "name": "ATcity",
+            "type": "AMAZON.AT_CITY"
+          }
+        ]
+      },
+      {
+        "name": "knowMoreIntent",
+        "samples": [
+          "tell me more about it"
+        ],
+        "slots": []
+      },
+      {
+        "name": "NewSession",
+        "samples": [
+          "alexa open atlas demo",
+          "atlas demo"
+        ],
+        "slots": []
+      },
+      {
+        "name": "SessionEndedRequest",
+        "samples": [
+          "That's all",
+          "thats all",
+          "that's all for today",
+          "i quit",
+          "i gotta go",
+          "gotta go"
+        ],
+        "slots": []
+      }
+    ],
+    "invocationName": "atlas demo"
+  }
+}
