@@ -17,6 +17,13 @@
               "value": "world mode",
               "synonyms": []
             }
+          },
+          {
+            "id": null,
+            "name": {
+              "value": "choose world mode",
+              "synonyms": []
+            }
           }
         ]
       }
@@ -24,20 +31,33 @@
     "intents": [
       {
         "name": "AMAZON.CancelIntent",
-        "samples": []
+        "samples": [
+          "cancel",
+          "cancel it",
+          "cancel my last command"
+        ]
       },
       {
         "name": "AMAZON.HelpIntent",
-        "samples": []
+        "samples": [
+          "help",
+          "help me",
+          "i need help"
+        ]
       },
       {
         "name": "AMAZON.NoIntent",
-        "samples": []
+        "samples": [
+          "No",
+          "Nope",
+          "neh",
+          "nhi",
+          "Nakko"
+        ]
       },
       {
         "name": "AMAZON.RepeatIntent",
         "samples": [
-          "what is it",
           "once more",
           "can you please repeat",
           "repeat",
@@ -48,13 +68,19 @@
       },
       {
         "name": "AMAZON.StopIntent",
-        "samples": []
+        "samples": [
+          "stop"
+        ]
       },
       {
         "name": "AMAZON.YesIntent",
         "samples": [
           "yes",
-          "yes please"
+          "yes please",
+          "yep",
+          "yeah",
+          "sure",
+          "yaa"
         ]
       },
       {
@@ -110,23 +136,40 @@
         ]
       },
       {
-        "name": "knowMoreIntent",
+        "name": "defeatIntent",
         "samples": [
-          "tell me more about it"
+          "I accept my defeat",
+          "you win",
+          "okay you win",
+          "I quit",
+          "fine you win"
         ],
         "slots": []
       },
       {
         "name": "LifeLineIntent",
         "samples": [
-          "skip",
           "i want to use a lifeline",
           "lifeline",
           "life line",
           "i don't know this one",
           "i don't know you tell me",
-          "what is it",
-          "fast forward"
+          "i want to use the lifeline",
+          "i want my lifeline",
+          "i don't know this",
+          "i want to use my lifeline"
+        ],
+        "slots": []
+      },
+      {
+        "name": "NewSession",
+        "samples": [
+          "alexa open atlas adventure",
+          "atlas adventure",
+          "restart the game",
+          "let's restart the game",
+          "restart",
+          "alexa open atlas"
         ],
         "slots": []
       },
@@ -136,15 +179,31 @@
           "That's all",
           "thats all",
           "that's all for today",
-          "i quit",
           "i gotta go",
           "gotta go",
           "bye ",
-          "goodbye"
+          "goodbye",
+          "bye bye"
+        ],
+        "slots": []
+      },
+      {
+        "name": "spellingIntent",
+        "samples": [
+          "spell it",
+          "spelling",
+          "tell me the spelling",
+          "spell bee",
+          "what's the spelling",
+          "spell it for me",
+          "know more",
+          "tell me more",
+          "more",
+          "where is it"
         ],
         "slots": []
       }
     ],
-    "invocationName": "atlas demo"
+    "invocationName": "atlas adventure"
   }
 }
