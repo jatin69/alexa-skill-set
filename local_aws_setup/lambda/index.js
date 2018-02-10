@@ -47,6 +47,8 @@ var newSessionHandlers = {
     'NewSession': function () {
         //console.log('NewSession' + JSON.stringify(this.event.request));
 
+        console.log("Hello Dev, Starting a brand new session.");
+
         // first time call
         if (Object.keys(this.attributes).length === 0) {
             this.attributes['endedSessionCount'] = 0;
@@ -59,8 +61,9 @@ var newSessionHandlers = {
         this.attributes['gameMode'] = '';
         this.attributes['countryModeFullName'] = '';
         this.attributes['prevIntentMessage'] = '';
-
-        console.log("Hello Dev, Starting a brand new session.");
+//
+//        this.attributes['shortcutChooseMode'] = "value" in this.event.request.intent.slot.modeSelect ?
+//                this.event.request.intent.slot.modeSelect.value : '';
 
         this.handler.state = states.STARTMODE;
         this.emitWithState('AMAZON.YesIntent');
@@ -120,7 +123,6 @@ var startGameHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
         let prompt = this.attributes['prevIntentMessage'];
         this.emit(':ask', prompt, prompt);
     },
-    
     'Unhandled': function () {
         let prompt = 'Say yes to continue, or no to end the game.';
         this.emit(':ask', prompt, prompt);
@@ -134,7 +136,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
         this.emit('NewSession'); // Uses the handler in newSessionHandlers
     },
     'AMAZON.HelpIntent': function () {
-         let prompt = 'Hey, Welcome to Atlas adventure ! The Game has two modes, WORLD mode, and COUNTRY mode. ' +
+        let prompt = 'Hey, Welcome to Atlas adventure ! The Game has two modes, WORLD mode, and COUNTRY mode. ' +
                 '<say-as interpret-as = "interjection"> In the WORLD mode, </say-as> we are free to use any place in the world. ' +
                 'You can choose the world mode simply by saying <say-as interpret-as = "interjection"> world mode. </say-as>  ' +
                 '<say-as interpret-as = "interjection"> whereas  </say-as> ' +
@@ -149,10 +151,19 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
     'CityChainIntent': function () {
         console.log("Inside city chain of choose mode");
 
-        if(this.attributes['gameMode']!==''){
+        if (this.attributes['gameMode'] !== '') {
             let prompt = 'You have already chosen a mode. Shall we begin the game ?';
-            this.emit(':ask',prompt, prompt);
+            this.emit(':ask', prompt, prompt);
         }
+
+        /*
+         const city = '';
+         if (this.attributes['shortcutChooseMode'] === '') {
+         city = obtainUserCity(this.event.request.intent.slots);
+         } else {
+         city = this.attributes['shortcutChooseMode'];
+         }
+         */
 
         const city = obtainUserCity(this.event.request.intent.slots);
 
@@ -167,8 +178,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             let reprompt = 'Shall we start the game ? ';
             this.emit(':ask', prompt, reprompt);
 
-        }
-         else {
+        } else {
             var validateUserInputOptions = {
                 method: 'GET',
                 url: 'https://maps.googleapis.com/maps/api/geocode/json',
@@ -182,7 +192,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                             'cache-control': 'no-cache'
                         }
             };
-            const intent = this;
+            var intent = this;
             rp(validateUserInputOptions)
                     .then(function (response) {
 
@@ -190,45 +200,50 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                         //console.log(prettyJSON(jsonUserCityResponse));
                         const responseStatus = jsonUserCityResponse.status;
                         //console.log(responseStatus);
+                        let isvalid = "";
                         if (responseStatus !== "OK") {
                             console.log("Response status is Not OK. Nothing found man.");
+//                            intent.attributes['shortcutChooseMode'] = '';
                             intent.emit('Unhandled');
-                        }
-
-                        /* List of places can be found at https://developers.google.com/maps/documentation/geocoding/intro  */
-                        const validPlacesList = ['country'];
-
-                        let matchType = jsonUserCityResponse.results[0].types;
-                        let isvalid = matchType.some(r => validPlacesList.includes(r));
-
-                        if (!isvalid) {
-                            let prompt = '<say-as interpret-as = "interjection">Hmmm</say-as> ' +
-                                    ' I haven\'t heard about this country. ' +
-                                    'Choose some other country or <say-as interpret-as = "interjection">just choose the WORLD mode.</say-as> ';
-                            let reprompt = "Choose a mode by saying 'World' or a country name .";
-                            intent.attributes['prevIntentMessage'] = reprompt;
-                            intent.emit(':ask', prompt, reprompt);
                         } else {
-                            console.log("Place is Valid.");
+                            /* List of places can be found at https://developers.google.com/maps/documentation/geocoding/intro  */
+                            const validPlacesList = ['country'];
+
+                            let matchType = jsonUserCityResponse.results[0].types;
+                            isvalid = matchType.some(r => validPlacesList.includes(r));
+
+
+
+                            if (!isvalid) {
+                                let prompt = '<say-as interpret-as = "interjection">Hmmm</say-as> ' +
+                                        ' I haven\'t heard about this country. ' +
+                                        'Choose some other country or <say-as interpret-as = "interjection">just choose the WORLD mode.</say-as> ';
+                                let reprompt = "Choose a mode by saying 'World' or a country name .";
+                                intent.attributes['prevIntentMessage'] = reprompt;
+//                            intent.attributes['shortcutChooseMode'] = '';
+                                intent.emit(':ask', prompt, reprompt);
+                            } else {
+                                console.log("Place is Valid.");
+                            }
+
+                            let userCity = _.find(jsonUserCityResponse.results[0].address_components,
+                                    function (o) {
+                                        return arrayContainsArray(o.types, jsonUserCityResponse.results[0].types);
+                                        //return _.includes(o.types, 'locality' ); 
+                                    });
+
+                            const alpha2Code = userCity.short_name;
+                            let country_name = userCity.long_name;
+                            intent.attributes['gameMode'] = alpha2Code;
+                            intent.attributes['countryModeFullName'] = country_name;
+                            console.log("country code is : ", alpha2Code);
+                            console.log("valid country mode");
+                            let prompt = '<say-as interpret-as = "interjection">I see ! You Chose ' + country_name + ' </say-as>' +
+                                    'So shall we start the game ? ';
+                            intent.attributes['prevIntentMessage'] = prompt;
+                            let reprompt = 'Shall we start the game ? ';
+                            intent.emit(':ask', prompt, reprompt);
                         }
-
-                        let userCity = _.find(jsonUserCityResponse.results[0].address_components,
-                                function (o) {
-                                    return arrayContainsArray(o.types, jsonUserCityResponse.results[0].types);
-                                    //return _.includes(o.types, 'locality' ); 
-                                });
-
-                        const alpha2Code = userCity.short_name;
-                        let country_name = userCity.long_name;
-                        intent.attributes['gameMode'] = alpha2Code;
-                        intent.attributes['countryModeFullName'] = country_name;
-                        console.log("country code is : ", alpha2Code);
-                        console.log("valid country mode");
-                        let prompt = '<say-as interpret-as = "interjection">I see ! You Chose ' + country_name + ' </say-as>' +
-                                'So shall we start the game ? ';
-                        intent.attributes['prevIntentMessage'] = prompt;
-                        let reprompt = 'Shall we start the game ? ';
-                        intent.emit(':ask', prompt, reprompt);
                     })
                     .catch(function (error) {
                         console.log('Error' + error);
@@ -252,8 +267,8 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             this.emit(':ask', prompt, reprompt);
         }
     },
-
     'AMAZON.NoIntent': function () {
+        console.log("User said No");
         this.emit(':tell', MSG.END_MESSAGE);
     },
     'SessionEndedRequest': function () {
@@ -275,7 +290,6 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
         let prompt = this.attributes['prevIntentMessage'];
         this.emit(':ask', prompt, prompt);
     },
-    
     'Unhandled': function () {
         let prompt = 'Please Choose the Game Mode';
         this.emit(':ask', prompt, prompt);
@@ -306,12 +320,10 @@ function obtainUserCity(slots) {
 }
 
 var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
-
     'NewSession': function () {
         this.handler.state = '';
         this.emitWithState('NewSession'); // Equivalent to the Start Mode NewSession handler
     },
-
     'CityChainIntent': function () {
 
         // storing current intent because it may get lost in promises
@@ -424,20 +436,23 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
 
                     var userCityFullName = userCity.long_name;
 
-                    /// test
-                    if (userCityFullName.substring(0, 1).toLowerCase() !== intent.attributes['mustStartWith'].toLowerCase()) {
+                    if (intent.attributes['mustStartWith'] !== '-') {
+                        /// test
+                        if (userCityFullName.substring(0, 1).toLowerCase() !== intent.attributes['mustStartWith'].toLowerCase()) {
 
-                        console.log("failed to match first character in google map api check.");
-                let prompt = city + ' does not begin with ' + intent.attributes['mustStartWith'] +
-                        '. <break strength="x-strong"/> Think of another place that starts with the letter ' +
-                        intent.attributes['mustStartWith'] + '.<break strength="x-strong"/> Go!';
+                            console.log("failed to match first character in google map api check.");
+                            let prompt = city + ' does not begin with ' + intent.attributes['mustStartWith'] +
+                                    '. <break strength="x-strong"/> Think of another place that starts with the letter ' +
+                                    intent.attributes['mustStartWith'] + '.<break strength="x-strong"/> Go!';
 
-                let reprompt = MSG.RE + 'that starts with the letter ' + intent.attributes['mustStartWith'];
-                intent.attributes['prevIntentMessage'] = reprompt;
+                            let reprompt = MSG.RE + 'that starts with the letter ' + intent.attributes['mustStartWith'];
+                            intent.attributes['prevIntentMessage'] = reprompt;
 
-                console.log(prompt);
-                intent.emit(':ask', prompt, reprompt);
-            }
+                            console.log(prompt);
+                            intent.emit(':ask', prompt, reprompt);
+                        }
+                    }
+
 
 
                     var user_place_id = jsonUserCityResponse.results[0].place_id;
@@ -471,11 +486,11 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                     console.log("Place is :", userCityFullName, "  and last letter is :", lastLetterOfUserCity);
 
 
-                    // for truly random => think some other way if possible
+                    // for truly random => think some other way if possible [imp]
                     // let alphabets = 'abcdefghijklmnopqrstuvwxyz';
                     // commonly sound cities
-                    //let alphabets = 'abcefghijklmnoprstuv';
-                    //lastLetterOfUserCity += alphabets.charAt(Math.floor(Math.random() * alphabets.length));
+                    let alphabets = 'abcdefghijklmnoprstuv';
+                    lastLetterOfUserCity += alphabets.charAt(Math.floor(Math.random() * alphabets.length));
 
                     console.log("last letter identified and is ", lastLetterOfUserCity);
 
@@ -486,8 +501,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         qs:
                                 {
                                     input: lastLetterOfUserCity,
-                                    //types: '(cities)',
-                                    types: '(regions)',
+                                    types: '(cities)',
+//                                    types: '(regions)',
                                     //components: 'country:us',
                                     key: 'AIzaSyAIAzhG5a8ndrquII3dNMXAXFNnYWBIcpc'
                                 },
@@ -515,9 +530,9 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                 const responseStatusAlexa = jsonAlexaCityResponse.status;
                                 //console.log(responseStatus);
                                 if (responseStatusAlexa === "ZERO_RESULTS") {
-                                    console.log("Response status is ",responseStatusAlexa);
+                                    console.log("Response status is ", responseStatusAlexa);
                                     let prompt = 'I can\'t find a city. You won. <say-as interpret-as = "interjection"> Congratulations !! </say-as> ';
-                                    intent.emit(':tell',prompt);
+                                    intent.emit(':tell', prompt);
                                 }
 
                                 // 
@@ -525,6 +540,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                 var alexafoundPosition = -2;
                                 var alexaCity = 'undef';
                                 var alexa_place_id = 'undef';
+
+//                                var found_city = "";
 
                                 while (alexafoundPosition !== -1) {
                                     alexaCity = jsonAlexaCityResponse.predictions[getRandomInt(0, jsonAlexaCityResponse.predictions.length)];
@@ -537,7 +554,10 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                     }
                                 }
 
-                                var guessedPlace = alexaCity.structured_formatting.main_text;
+                                var found_city = alexaCity.structured_formatting.main_text;
+                                var guessedPlace = found_city.replace(/[^a-zA-Z ]/g, "");
+//                              var guessedPlace = alexaCity.structured_formatting.main_text;
+                                //var guessedPlace = found_city;
                                 var locatedIn = alexaCity.structured_formatting.secondary_text;
 
 
@@ -552,7 +572,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                 intent.attributes['mustStartWith'] = mustStartWith;
 
                                 let prompt = 'You said ' + intent.attributes['userCityFullName'] + '. so my city has to start with the letter '
-                                        + lastLetterOfUserCity[0] + '. I think I\'ll go with ' + guessedPlace + '. So your city has to start with the letter '
+                                        + lastLetterOfUserCity[0] + '. I think I\'ll go with ' + found_city + '. So your city has to start with the letter '
                                         + mustStartWith + '. Go!';
                                 intent.attributes['prevIntentMessage'] = prompt;
 
@@ -577,7 +597,6 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
 
 
     },
-
     'AMAZON.HelpIntent': function () {
         // first time
         if (this.attributes['mustStartWith'] === '-') {
@@ -644,7 +663,6 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
         this.emit(':ask', prompt, prompt);
     },
     'Unhandled': function () {
-
         if (this.attributes['mustStartWith'] === '-') {
             if (this.attributes['gameMode'] === 'world') {
                 let prompt = 'Sorry, I didn\'t get that. Try saying a place name ';
