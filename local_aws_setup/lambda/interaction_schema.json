@@ -69,7 +69,9 @@
       {
         "name": "AMAZON.StopIntent",
         "samples": [
-          "stop"
+          "stop",
+          "exit",
+          "Alexa exit"
         ]
       },
       {
@@ -142,7 +144,8 @@
           "you win",
           "okay you win",
           "I quit",
-          "fine you win"
+          "fine you win",
+          "quit"
         ],
         "slots": []
       },
@@ -157,7 +160,9 @@
           "i want to use the lifeline",
           "i want my lifeline",
           "i don't know this",
-          "i want to use my lifeline"
+          "i want to use my lifeline",
+          "activate lifeline",
+          "use lifeline"
         ],
         "slots": []
       },

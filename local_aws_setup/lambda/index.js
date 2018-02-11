@@ -20,33 +20,35 @@ var states = {
 
 var MSG = {
     'END_MESSAGE': '<say-as interpret-as = "interjection"> Okay, see you next time! bye !</say-as>',
-    'NOT_FOUND': '<say-as interpret-as = "interjection">Hmmmm. </say-as>, Never heard of this place,' +
+    'NOT_FOUND': '<say-as interpret-as = "interjection">Hmmmm. </say-as><break time="400ms"/> Never heard of this place,' +
             'Think of another place! <say-as interpret-as = "interjection"> Go ! </say-as>',
     'NOT_VALID': '<say-as interpret-as = "interjection">Hmmmm. </say-as>' +
             'That does not seem like a valid place. ' +
             'Think of another place! <say-as interpret-as = "interjection"> Go ! </say-as>',
-    'ALREADY_USED': '<say-as interpret-as = "interjection">Oh no! </say-as>' +
+    'ALREADY_USED': '<say-as interpret-as = "interjection">Oh ho! </say-as>' +
             'We have already used this place in the game. ' +
             'Think of another place, <say-as interpret-as = "interjection">GO! </say-as>',
     'RE': 'Please say the name of a place.'
+};
+
+var CARD = {
+    'title': {
+        'normal': "Atlas Adventure",
+        'world': "Atlas Adventure : World Mode ",
+        'country': "Atlas Adventure : Country Mode - "
+    }
 };
 
 var newSessionHandlers = {
     'LaunchRequest': function () {
         //console.log('LaunchRequest' + JSON.stringify(this.event.request));
         console.log("Launch Request Initiated");
-        this.emit('NewSession'); // Uses the handler in newSessionHandlers
+        this.emit('NewSession');
     },
     'NewSession': function () {
         //console.log('NewSession' + JSON.stringify(this.event.request));
-
         console.log("Hello Dev, Starting a brand new session.");
-        // first time call
-        if (Object.keys(this.attributes).length === 0) {
-            this.attributes['endedSessionCount'] = 0;
-            this.attributes['gamesPlayed'] = 0;
-        }
-        // any time
+
         this.attributes['mustStartWith'] = '-';
         this.attributes['userCityFullName'] = '';
         this.attributes['alreadyUsed'] = [];
@@ -56,9 +58,6 @@ var newSessionHandlers = {
         this.attributes['prevIntentMessage'] = '';
         this.attributes['last_place_name'] = '';
         this.attributes['lifelineCount'] = 3;
-//
-//        this.attributes['shortcutChooseMode'] = "value" in this.event.request.intent.slot.modeSelect ?
-//                this.event.request.intent.slot.modeSelect.value : '';
 
         this.handler.state = states.STARTMODE;
         this.emitWithState('AMAZON.YesIntent');
@@ -68,7 +67,8 @@ var newSessionHandlers = {
 var startGameHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
     'NewSession': function () {
         this.handler.state = '';
-        this.emitWithState('NewSession'); // Uses the handler in newSessionHandlers
+        this.emitWithState('NewSession');
+        // Uses the handler in newSessionHandlers
     },
     'AMAZON.YesIntent': function () {
         let prompt = 'Hey, Welcome to Atlas adventure ! The Game has two modes, WORLD mode, and COUNTRY mode. ' +
@@ -81,10 +81,16 @@ var startGameHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
         this.attributes['prevIntentMessage'] = prompt;
         let reprompt = "Choose a mode by saying 'World' or a country name .";
         this.handler.state = states.CHOOSEMODE;
-        this.emit(':ask', prompt, reprompt);
+
+        let cardTitle = CARD.title.normal;
+        let cardContent = 'Choose a Mode\n\n\
+                        Say "World Mode" , or\n\
+                        Say a country name eg "US" ';
+        this.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
+//        this.emit(':ask', prompt, reprompt);       
     },
     'AMAZON.NoIntent': function () {
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.HelpIntent': function () {
         let prompt = 'The game will start by you telling me the name of a valid Place. ' +
@@ -95,30 +101,30 @@ var startGameHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
                 'Do you want to start the game ?';
         this.attributes['prevIntentMessage'] = prompt;
         let reprompt = 'Do you want to start the game ?';
-        this.emit(':ask', prompt, reprompt);
+//      this.emit(':ask', prompt, reprompt);
+        let cardTitle = CARD.title.normal;
+        let cardContent = 'Welcome to Atlas Adventure.\n ' + "Do you want to Start the game ? \n Say yes ! ";
+        this.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
+
     },
     'SessionEndedRequest': function () {
         console.log('SessionEndedRequest');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.CancelIntent': function () {
         console.log('AMAZON.CancelIntent');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.StopIntent': function () {
         console.log('AMAZON.StopIntent');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.RepeatIntent': function () {
         let prompt = this.attributes['prevIntentMessage'];
         this.emit(':ask', prompt, prompt);
     },
     'defeatIntent': function () {
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'Unhandled': function () {
         let prompt = 'Say yes to continue, or no to end the game.';
@@ -138,15 +144,6 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             this.emit(':ask', prompt, prompt);
         }
 
-        /*
-         const city = '';
-         if (this.attributes['shortcutChooseMode'] === '') {
-         city = obtainUserCity(this.event.request.intent.slots);
-         } else {
-         city = this.attributes['shortcutChooseMode'];
-         }
-         */
-
         const city = obtainUserCity(this.event.request.intent.slots);
         if (city === "world" || city === "world mode") {
             console.log("world mode inside choose mode");
@@ -156,7 +153,7 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             this.attributes['gameMode'] = 'world';
             console.log("chosen game mode is  ", this.attributes['gameMode']);
             let reprompt = 'Shall we start the game ? ';
-            this.emit(':ask', prompt, reprompt);
+            this.emit(':askWithCard', prompt, reprompt, CARD.title.world, "Say Yes !");
         } else {
             var validateUserInputOptions = {
                 method: 'GET',
@@ -195,8 +192,11 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                                         'Choose some other country or <say-as interpret-as = "interjection">just choose the WORLD mode.</say-as> ';
                                 let reprompt = "Choose a mode by saying 'World' or a country name .";
                                 intent.attributes['prevIntentMessage'] = reprompt;
-//                            intent.attributes['shortcutChooseMode'] = '';
-                                intent.emit(':ask', prompt, reprompt);
+                                let cardTitle = CARD.title.normal;
+                                let cardContent = 'Choose a Mode\n\n\
+                                                    Say "World Mode" , or\n\
+                                                    Say a country name eg "US" ';
+                                intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                             } else {
                                 console.log("Place is Valid.");
                             }
@@ -216,7 +216,9 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                                     'So shall we start the game ? ';
                             intent.attributes['prevIntentMessage'] = prompt;
                             let reprompt = 'Shall we start the game ? ';
-                            intent.emit(':ask', prompt, reprompt);
+                            let cardTitle = CARD.title.country + country_name;
+                            let cardContent = "Say Yes !";
+                            intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                         }
                     })
                     .catch(function (error) {
@@ -237,12 +239,20 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
             this.attributes['prevIntentMessage'] = prompt;
             let reprompt = MSG.RE;
             this.handler.state = states.PLAYMODE;
-            this.emit(':ask', prompt, reprompt);
+
+            let cardTitle = '';
+            if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                cardTitle = CARD.title.world;
+            } else {
+                cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+            }
+
+            let cardContent = "Say a Place Name !";
+            this.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
         }
     },
     'AMAZON.NoIntent': function () {
-        console.log("User said No");
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.HelpIntent': function () {
         let prompt = 'Hey, Welcome to Atlas adventure ! The Game has two modes, WORLD mode, and COUNTRY mode. ' +
@@ -254,30 +264,30 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
                 'So which mode do you want to play in ? World Mode or Country mode ?';
         this.attributes['prevIntentMessage'] = prompt;
         let reprompt = "Choose a mode by saying 'World' or a country name .";
-        this.emit(':ask', prompt, reprompt);
+        let cardTitle = CARD.title.normal;
+        let cardContent = 'Choose a Mode\n\n\
+                        Say "World Mode" , or\n\
+                        Say a country name eg "US" ';
+        this.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
     },
     'SessionEndedRequest': function () {
         console.log('SessionEndedRequest');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.CancelIntent': function () {
         console.log('AMAZON.CancelIntent');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.StopIntent': function () {
         console.log('AMAZON.StopIntent');
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.RepeatIntent': function () {
         let prompt = this.attributes['prevIntentMessage'];
         this.emit(':ask', prompt, prompt);
     },
     'defeatIntent': function () {
-        this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'Unhandled': function () {
         let prompt = 'Please Choose the Game Mode';
@@ -287,12 +297,6 @@ var chooseModeHandlers = Alexa.CreateStateHandler(states.CHOOSEMODE, {
 
 function obtainUserCity(slots) {
     let city = 'undef';
-    /*console.log("obtained slot values are ====== ");
-     console.log(slots.UScity.value);
-     console.log(slots.country.value);
-     console.log("==========================");
-     */
-
     city = ("value" in slots.UScity) ? slots.UScity.value
             : ("value" in slots.USstate) ? slots.USstate.value
             : ("value" in slots.GBcity) ? slots.GBcity.value
@@ -329,7 +333,15 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                 let reprompt = MSG.RE + 'that starts with the letter ' + intent.attributes['mustStartWith'];
                 intent.attributes['prevIntentMessage'] = reprompt;
                 console.log(prompt);
-                intent.emit(':ask', prompt, reprompt);
+
+                let cardTitle = '';
+                let cardContent = reprompt;
+                if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                    cardTitle = CARD.title.world;
+                } else {
+                    cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                }
+                intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
             }
         }
 
@@ -374,7 +386,14 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         let prompt = MSG.NOT_FOUND;
                         let reprompt = MSG.RE;
                         intent.attributes['prevIntentMessage'] = reprompt;
-                        intent.emit(':ask', prompt);
+                        let cardTitle = '';
+                        let cardContent = reprompt;
+                        if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                            cardTitle = CARD.title.world;
+                        } else {
+                            cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                        }
+                        intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                     }
 
                     /* 
@@ -401,7 +420,15 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         let prompt = MSG.NOT_VALID;
                         let reprompt = MSG.RE;
                         intent.attributes['prevIntentMessage'] = reprompt;
-                        intent.emit(':ask', prompt);
+                        let cardTitle = '';
+                        let cardContent = reprompt;
+                        if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                            cardTitle = CARD.title.world;
+                        } else {
+                            cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                        }
+                        intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
+
                     } else {
                         console.log("Place is Valid. Moving forward.");
                     }
@@ -412,6 +439,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                             function (o) {
                                 return arrayContainsArray(o.types, jsonUserCityResponse.results[0].types);
                             });
+
+                    // if place is invalid => crashes to catch => unhandled intent
                     var userCityFullName = userCity.long_name;
                     if (intent.attributes['mustStartWith'] !== '-') {
                         /// test
@@ -424,7 +453,14 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                             let reprompt = MSG.RE + 'that starts with the letter ' + intent.attributes['mustStartWith'];
                             intent.attributes['prevIntentMessage'] = reprompt;
                             console.log(prompt);
-                            intent.emit(':ask', prompt, reprompt);
+                            let cardTitle = '';
+                            let cardContent = reprompt;
+                            if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                                cardTitle = CARD.title.world;
+                            } else {
+                                cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                            }
+                            intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                         }
                     }
 
@@ -443,8 +479,17 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                     if (foundPosition !== -1) {
                         // exists
                         console.log('place id already exists');
-                        var message = 'You said ' + userCityFullName + '. ';
-                        intent.emit(':ask', message + MSG.ALREADY_USED);
+                        let prompt = 'You said ' + userCityFullName + '. ' + MSG.ALREADY_USED;
+                        let reprompt = 'We have already used this place in the game. \nThink of another place, Go !';
+
+                        let cardTitle = '';
+                        let cardContent = reprompt;
+                        if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                            cardTitle = CARD.title.world;
+                        } else {
+                            cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                        }
+                        intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                     }
 
 
@@ -498,21 +543,35 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                     let prompt = 'I can\'t find a city starting with ' + intent.attributes['mustStartWith'] +
                                             '. You won. <say-as interpret-as = "interjection"> Congratulations !! </say-as> ' +
                                             '<break time="1s"/> I\'ll see you later <say-as interpret-as = "interjection"> Bye !! </say-as>';
-                                    intent.emit(':tell', prompt);
+
+                                    let cardTitle = '';
+                                    let cardContent = 'Congratulations ! \nYou Won !!';
+                                    if (this.attributes['gameMode'] === "world" || this.attributes['gameMode'] === "world mode") {
+                                        cardTitle = CARD.title.world;
+                                    } else {
+                                        cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                                    }
+                                    intent.emit(':tellWithCard', prompt, cardTitle, cardContent);
+
                                 }
 
                                 var alexafoundPosition = -2;
                                 var alexaCity = 'undef';
                                 var alexa_place_id = 'undef';
 //                                var found_city = "";
-
+                                var count = 7;
                                 while (alexafoundPosition !== -1) {
+                                    if (count === 0) {
+                                        console.log("Loop Failure.");
+                                        intent.emit('Unhandled');
+                                    }
                                     alexaCity = jsonAlexaCityResponse.predictions[getRandomInt(0, jsonAlexaCityResponse.predictions.length)];
                                     alexa_place_id = alexaCity.place_id;
                                     alexafoundPosition = intent.attributes['alreadyUsed'].indexOf(alexa_place_id);
                                     if (alexafoundPosition !== -1) {
                                         // exists
                                         console.log('ALEXA FOUND A PLACE WHOSE place id already exists. ::: RE PICKING');
+                                        count = count - 1;
                                         //this.emit(':ask',MSG.ALREADY_USED);
                                     }
                                 }
@@ -539,7 +598,18 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                         + mustStartWith + '. Go!';
                                 intent.attributes['prevIntentMessage'] = prompt;
                                 console.log(prompt);
-                                intent.emit(':ask', prompt, prompt);
+                                let reprompt = 'Your city has to start with the letter ' + mustStartWith + '. Go!';
+
+                                let cardTitleLast = '';
+                                let cardContent = 'You said ' + intent.attributes['userCityFullName'] + "\n"
+                                        + 'I say ' + found_city + "\n\nSay a place with the letter " + mustStartWith;
+                                if (intent.attributes['gameMode'] === "world" || intent.attributes['gameMode'] === "world mode") {
+                                    cardTitleLast = CARD.title.world;
+                                } else {
+                                    cardTitleLast = CARD.title.country + intent.attributes['countryModeFullName'];
+                                }
+                                intent.emit(':askWithCard', prompt, reprompt, cardTitleLast, cardContent);
+
                             })
                             .catch(function (error) {
                                 console.log('Error' + error);
@@ -555,6 +625,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                     intent.emitWithState('Unhandled');
                 });
     },
+
     'LifeLineIntent': function () {
         console.log("Inside life Line Intent");
         let availableLife = this.attributes['lifelineCount'];
@@ -600,18 +671,25 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                             console.log("Response status is ", responseStatusAlexa);
                             let prompt = '<say-as interpret-as = "interjection"> Hmmm !! </say-as> That\'s a tough one. ' +
                                     '<break time="400ms"/>I don\'t know that either. <break time="300ms"/> You are own your own for now. ';
-                            intent.emit(':ask', prompt, prompt);
+                            let cardTitle = CARD.title.normal + " : lifeline ";
+                            let cardContent = "I don't know that either. \n" + 'You are own your own for now.';
+                            this.emit(':askWithCard', prompt, prompt, cardTitle, cardContent);
                         }
                         var alexafoundPosition = -2;
                         var alexaCity = 'undef';
                         var alexa_place_id = 'undef';
-
+                        var count = 7;
                         while (alexafoundPosition !== -1) {
+                            if (count === 0) {
+                                console.log("Loop Failure.");
+                                intent.emit('Unhandled');
+                            }
                             alexaCity = jsonAlexaCityResponse.predictions[getRandomInt(0, jsonAlexaCityResponse.predictions.length)];
                             alexa_place_id = alexaCity.place_id;
                             alexafoundPosition = intent.attributes['alreadyUsed'].indexOf(alexa_place_id);
                             if (alexafoundPosition !== -1) {
                                 console.log('ALEXA FOUND A PLACE WHOSE place id already exists. ::: RE PICKING');
+                                count = count - 1;
                             }
                         }
 
@@ -650,7 +728,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                     .then(function (response) {
                                         console.log("lifeline intent, find long name");
                                         const jsonUserCityResponse = JSON.parse(response);
-//                            console.log(prettyJSON(jsonUserCityResponse));
+//                                        console.log(prettyJSON(jsonUserCityResponse));
                                         const responseStatus = jsonUserCityResponse.status;
                                         if (responseStatus !== "OK") {
                                             console.log("Response status is Not OK. Nothing found man.");
@@ -668,7 +746,15 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                         let reprompt = 'Say ' + guessedPlace + 'to continue the game !';
                                         console.log("Lifeline success.");
                                         intent.attributes['lifelineCount'] = availableLife - 1;
-                                        intent.emit(':ask', prompt, reprompt);
+                                        let cardTitle = "";
+                                        let cardContent = 'lifeline activated ! \n The place is ' + guessedPlace + '\n and, it is located in ' + location;
+                                        let currMode = intent.attributes['gameMode'];
+                                        if (currMode === 'world') {
+                                            cardTitle = CARD.title.world;
+                                        } else {
+                                            cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                                        }
+                                        intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                                     })
                                     .catch(function (error) {
                                         console.log("Error is : ", error);
@@ -679,7 +765,15 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                         let reprompt = 'Say ' + guessedPlace + 'to continue the game !';
                                         console.log("Lifeline success.");
                                         intent.attributes['lifelineCount'] = availableLife - 1;
-                                        intent.emit(':ask', prompt, reprompt);
+                                        let cardTitle = "";
+                                        let cardContent = 'lifeline activated ! \n The place is ' + guessedPlace + '\n and, it is located in ' + location;
+                                        let currMode = intent.attributes['gameMode'];
+                                        if (currMode === 'world') {
+                                            cardTitle = CARD.title.world;
+                                        } else {
+                                            cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                                        }
+                                        intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                                     });
                         } else {
                             let prompt = '<say-as interpret-as = "interjection"> Let\' see !! </say-as>' +
@@ -689,7 +783,16 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                             let reprompt = 'Say ' + guessedPlace + 'to continue the game !';
                             console.log("Lifeline success.");
                             intent.attributes['lifelineCount'] = availableLife - 1;
-                            intent.emit(':ask', prompt, reprompt);
+
+                            let cardTitle = "";
+                            let cardContent = 'lifeline activated ! \n The place is ' + guessedPlace + '\n and, it is located in ' + location;
+                            let currMode = intent.attributes['gameMode'];
+                            if (currMode === 'world') {
+                                cardTitle = CARD.title.world;
+                            } else {
+                                cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                            }
+                            intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                         }
                     })
                     .catch(function (error) {
@@ -702,7 +805,9 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
             let reprompt = 'Think of a place starting with ' + this.attributes['mustStartWith'] +
                     '<break time="400ms"/> or, Accept your defeat. ';
             let prompt = 'You have already used up all your Lifelines. ' + reprompt;
-            this.emit(':ask', prompt, reprompt);
+            let cardTitle = CARD.title.normal + " : lifeline ";
+            let cardContent = "No Lifeline remaining. \n" + 'Think of a place starting with ' + this.attributes['mustStartWith'];
+            this.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
         }
     },
     'spellingIntent': function () {
@@ -737,7 +842,6 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                 'cache-control': 'no-cache'
                             }
                 };
-//                console.log("options done");
                 rp(validateUserInputOptions)
                         .then(function (response) {
                             console.log("spelling intent, find long name");
@@ -751,7 +855,6 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                 full_name = jsonUserCityResponse.results[0].address_components[0].long_name;
                                 console.log("setting full name as ", full_name);
                             }
-
                             location = full_name + location.substring(2);
 
                             let reprompt = ' To resume the game, Simply say a place name starting with ' + intent.attributes['mustStartWith'] + ' .';
@@ -759,7 +862,16 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                     + location + '. <break time="350ms"/> And, It is spelled as, <break time="250ms"/> '
                                     + spell + '. <break time="700ms"/>' + reprompt;
                             intent.attributes['prevIntentMessage'] = prompt;
-                            intent.emit(':ask', prompt, reprompt);
+
+                            let cardTitle = "";
+                            let cardContent = 'The place is ' + place + '\n and, it is located in ' + location;
+                            let currMode = intent.attributes['gameMode'];
+                            if (currMode === 'world') {
+                                cardTitle = CARD.title.world;
+                            } else {
+                                cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                            }
+                            intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                         })
                         .catch(function (error) {
                             console.log("Error is ", error);
@@ -768,7 +880,15 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                                     + location + '. <break time="350ms"/> And, It is spelled as, <break time="250ms"/> '
                                     + spell + '. <break time="700ms"/>' + reprompt;
                             intent.attributes['prevIntentMessage'] = prompt;
-                            intent.emit(':ask', prompt, reprompt);
+                            let cardTitle = "";
+                            let cardContent = 'The place is ' + place + '\n and, it is located in ' + location;
+                            let currMode = intent.attributes['gameMode'];
+                            if (currMode === 'world') {
+                                cardTitle = CARD.title.world;
+                            } else {
+                                cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                            }
+                            intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
                         });
             } else {
                 let reprompt = ' To resume the game, Simply say a place name starting with ' + this.attributes['mustStartWith'] + ' .';
@@ -776,10 +896,16 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         + location + '. <break time="350ms"/> And, It is spelled as, <break time="250ms"/> '
                         + spell + '. <break time="700ms"/>' + reprompt;
                 this.attributes['prevIntentMessage'] = prompt;
-                this.emit(':ask', prompt, reprompt);
+                let cardTitle = "";
+                let cardContent = 'The place is ' + place + '\n and, it is located in ' + location;
+                let currMode = intent.attributes['gameMode'];
+                if (currMode === 'world') {
+                    cardTitle = CARD.title.world;
+                } else {
+                    cardTitle = CARD.title.country + intent.attributes['countryModeFullName'];
+                }
+                intent.emit(':askWithCard', prompt, reprompt, cardTitle, cardContent);
             }
-
-
         } else {
             console.log("Spelling called with empty field.");
             this.emit('Unhandled');
@@ -797,7 +923,7 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         ' Try saying a place name ';
                 this.attributes['prevIntentMessage'] = prompt;
                 let reprompt = ' Try saying a place name ';
-                this.emit(':ask', prompt, reprompt);
+                this.emit(':askWithCard', prompt, reprompt, CARD.title.world, reprompt);
             } else if (this.attributes['gameMode'] === '') {
                 this.handler.state = states.CHOOSEMODE;
                 this.emitWithState('AMAZON.HelpIntent');
@@ -808,37 +934,41 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                         ' Try saying a place name from ' + this.attributes['countryModeFullName'];
                 this.attributes['prevIntentMessage'] = prompt;
                 let reprompt = ' Try saying a place name from ' + this.attributes['countryModeFullName'];
-                this.emit(':ask', prompt, reprompt);
+                let cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                this.emit(':askWithCard', prompt, reprompt, cardTitle, reprompt);
             }
         } else {
+            let prompt = "";
+            let cardTitle = "";
+
             if (this.attributes['gameMode'] === 'world') {
-                const prompt = ' Try saying a place name that begin with ' + this.attributes['mustStartWith'];
+                prompt = ' Try saying a place name that begin with ' + this.attributes['mustStartWith'];
+                cardTitle = CARD.title.world;
             } else if (this.attributes['gameMode'] === '') {
                 this.handler.state = states.CHOOSEMODE;
                 this.emitWithState('AMAZON.HelpIntent');
             } else {
-                const prompt = ' Try saying a place name from ' + this.attributes['countryModeFullName'] +
-                        'that being with ' + this.attributes['mustStartWith'];
+                prompt = ' Try saying a place name from ' + this.attributes['countryModeFullName'] +
+                        ' that being with ' + this.attributes['mustStartWith'];
+                cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+
             }
             this.attributes['prevIntentMessage'] = prompt;
-            this.emit(':ask', prompt, prompt);
+            this.emit(':askWithCard', prompt, prompt, cardTitle, prompt);
         }
 
     },
     'SessionEndedRequest': function () {
         console.log('SessionEndedRequest');
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.CancelIntent': function () {
         console.log('AMAZON.CancelIntent');
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.StopIntent': function () {
         console.log('AMAZON.StopIntent');
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', MSG.END_MESSAGE);
+        this.emit(':tellWithCard', MSG.END_MESSAGE, CARD.title.normal, "Good Bye !");
     },
     'AMAZON.RepeatIntent': function () {
         let prompt = this.attributes['prevIntentMessage'];
@@ -850,7 +980,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                 'A smart player knows, when to try harder, and when to quit the game. ' +
                 '<say-as interpret-as = "interjection"> Good luck ! </say-as> ' +
                 'I\'ll see you next time. <say-as interpret-as = "interjection"> Bye !! </say-as>';
-        this.emit(':tell', prompt);
+        let cardContent = "You Played Well ! \n\nSee you next time. Bye !";
+        this.emit(':tellWithCard', prompt, CARD.title.normal, cardContent);
     },
     'Unhandled': function () {
         if (this.attributes['mustStartWith'] === '-') {
@@ -858,7 +989,8 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                 let prompt = 'Sorry, I didn\'t get that. Try saying a place name ';
                 this.attributes['prevIntentMessage'] = prompt;
                 let reprompt = ' Try saying a place name ';
-                this.emit(':ask', prompt, reprompt);
+                this.emit(':askWithCard', prompt, reprompt, CARD.title.world, reprompt);
+
             } else if (this.attributes['gameMode'] === '') {
                 this.handler.state = states.CHOOSEMODE;
                 this.emitWithState('AMAZON.HelpIntent');
@@ -866,21 +998,30 @@ var playModeHandlers = Alexa.CreateStateHandler(states.PLAYMODE, {
                 let prompt = 'Sorry, I didn\'t get that. Try saying a place name from ' + this.attributes['countryModeFullName'];
                 this.attributes['prevIntentMessage'] = prompt;
                 let reprompt = ' Try saying a place name from ' + this.attributes['countryModeFullName'];
-                this.emit(':ask', prompt, reprompt);
+                let cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                this.emit(':askWithCard', prompt, reprompt, cardTitle, reprompt);
             }
         } else {
             let prompt = "";
+            let reprompt = "";
+            let cardTitle = "";
             if (this.attributes['gameMode'] === 'world') {
                 prompt = 'Sorry, I didn\'t get that.  Try saying a place name that begin with ' + this.attributes['mustStartWith'];
+                cardTitle = CARD.title.world;
+                reprompt = 'Try saying a place name that begin with ' + this.attributes['mustStartWith'];
             } else if (this.attributes['gameMode'] === '') {
                 this.handler.state = states.CHOOSEMODE;
                 this.emitWithState('AMAZON.HelpIntent');
             } else {
                 prompt = 'Sorry, I didn\'t get that. Try saying a place name from ' + this.attributes['countryModeFullName'] +
-                        'that being with ' + this.attributes['mustStartWith'];
+                        ' that being with ' + this.attributes['mustStartWith'];
+                cardTitle = CARD.title.country + this.attributes['countryModeFullName'];
+                reprompt = 'Try saying a place name from ' + this.attributes['countryModeFullName'] +
+                        ' that being with ' + this.attributes['mustStartWith'];
             }
+
             this.attributes['prevIntentMessage'] = prompt;
-            this.emit(':ask', prompt, prompt);
+            this.emit(':askWithCard', prompt, reprompt, cardTitle, reprompt);
         }
     }
 });
