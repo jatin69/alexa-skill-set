@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+/Atlas-adventure_via_local_aws_setup/lambda/nbproject/private/
+
+googleAPI.txt
+
+samples/atlas-init.js
