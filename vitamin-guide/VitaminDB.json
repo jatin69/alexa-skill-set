@@ -1,95 +1,80 @@
 {
-	'A' : 
-	{
-		'name' : "Vitamin A, also knows as Retinol ",
-		'uses' : "Immune function, skin and cellular health, vision",
-		'sources' : "butter, sweet potato,pumpkin , milk, carrot, green vegetables like spinach,broccoli leaf",
-		'diseases' : ""
-	},
-	'B' : 
-	{
-		'name' : "Vitamin B has many subtypes. Try saying Vitamin B1",
-		'uses' : "Cell metabolism",
-		'sources' : "B vitamins are found in highest abundance in meat.other sources include legumes (pulses or beans), whole grains, 
-		potatoes, bananas",
-		'diseases' : ""
-	},
-	'B 1' : 
-	{
-		'name' : "Vitamin B1, also knows as thiamine ",
-		'uses' : "Vitamin B1 plays a major role in metabolizing food into energy.",
-		'sources' : "B1 is found in whole-grain cereals, yeast, beans, nuts, and meats.",
-		'diseases' : " Too little vitamin B1 causes beriberi, a disease affecting the heart, digestive system, and the nervous system."
-	},
-	'B 2' : 
-	{
-		'name' : "vitamin B2, also known as riboflavin",
-		'uses' : "Boost immune system. This type of B vitamin also functions to keep your skin, the lining of your gut, and your blood cells healthy.",
-		'sources' : "Fish, meat, and poultry, such as turkey, chicken, beef, kidneys, and liver. Eggs ,Nuts, Whole-grain breads, enriched breads, and wheat bran, 
-		Dairy products, Asparagus.",
-		'diseases' : "Cracked lips, Dry skin, Mouth ulcers"
-	},
-	'B 3' : 
-	{
-		'name' : "vitamin B3, also called nicotinic acid or niacin",
-		'uses' : "break down food we eat into energy we can use. ",
-		'sources' : "Legumes, nuts, enriched breads, dairy, fish, and lean meats",
-		'diseases' : ""
-	},
-	'B 5' : 
-	{
-		'name' : "vitamin B5",
-		'uses' : " is necessary for our bodies to produce hormones, and it's also needed for growth.",
-		'sources' : "You can find vitamin B5 in vegetables of the cabbage family, such as broccoli and kale, as well as in avocado. 
-		In addition, whole-grain cereals, potatoes, dairy, and organ meats are good sources.",
-		'diseases' : ""
-	},
-	'B 6' : 
-	{
-		'name' : "vitamin B6",
-		'uses' : "build new red blood cells, reduce risk of heart diseases 	",
-		'sources' : "Bananas, Beans, Beef liver, Bran, Brown rice, Carrots, Cheese, Chicken, Fortified ready-to-eat cereal, Lentils, Milk",
-		'diseases' : ""
-	},
-	'B 9' : 
-	{
-		'name' : "vitamin B9, also known as folic acid",
-		'uses' : "necessary for the body's growth and development. Pregnant women should take good amount of this vitamin.  vital to a baby's health and development.",
-		'sources' : "Naturally occurring folate is found in many sources, including dark-green leafy vegetables, asparagus, 
-		brussels sprouts, oranges, nuts, beans, and peas. ",
-		'diseases' : ""
-	},
-	'B 12' : 
-	{
-		'name' : "Vitamin B12",
-		'uses' : "Vitamin B12 is essential for building blood cells and maintaining healthy nerve cells in the body. ",
-		'sources' : "Natural sources rich in vitamin B12 are dairy products, fish, meat, and — in particular — beef liver and clams. This type of vitamin B can also be found in fortified items like breakfast cereals and nutritional yeast. 
-		The B12 vitamin is not abundantly available from plant products, making B12 deficiency a legitimate concern for vegans. ",
-		'diseases' : ""
-	},
-	'C' : 
-	{
-		'name' : "",
-		'uses' : "",
-		'sources' : "",
-		'diseases' : ""
-	},
-	'D' : 
-	{
-		'uses' : "",
-		'sources' : "",
-		'diseases' : ""
-	},
-	'E' : 
-	{
-		'uses' : "",
-		'sources' : "",
-		'diseases' : ""
-	},
-	'K' : 
-	{
-		'uses' : "",
-		'sources' : "",
-		'diseases' : ""
-	}
+  "A": {
+    "name": "Vitamin A, also knows as Retinol ",
+    "uses": "Immune function, skin and cellular health, vision",
+    "sources": "butter, sweet potato,pumpkin , milk, carrot, green vegetables like spinach,broccoli leaf",
+    "diseases": ""
+  },
+  "B": {
+    "name": "Vitamin B has many subtypes. Try saying Vitamin B1",
+    "uses": "Cell metabolism",
+    "sources": "B vitamins are found in highest abundance in meat.other sources include legumes (pulses or beans), whole grains, potatoes, bananas",
+    "diseases": ""
+  },
+  "B 1": {
+    "name": "Vitamin B1, also knows as thiamine ",
+    "uses": "Vitamin B1 plays a major role in metabolizing food into energy.",
+    "sources": "B1 is found in whole-grain cereals, yeast, beans, nuts, and meats.",
+    "diseases": " Too little vitamin B1 causes beriberi, a disease affecting the heart, digestive system, and the nervous system."
+  },
+  "B 2": {
+    "name": "vitamin B2, also known as riboflavin",
+    "uses": "Boost immune system. This type of B vitamin also functions to keep your skin, the lining of your gut, and your blood cells healthy.",
+    "sources": "Fish, meat, and poultry, such as turkey, chicken, beef, kidneys, and liver. Eggs ,Nuts, Whole-grain breads, enriched breads, and wheat bran, Dairy products, Asparagus.",
+    "diseases": "Cracked lips, Dry skin, Mouth ulcers"
+  },
+  "B 3": {
+    "name": "vitamin B3, also called nicotinic acid or niacin",
+    "uses": "break down food we eat into energy we can use. ",
+    "sources": "Legumes, nuts, enriched breads, dairy, fish, and lean meats",
+    "diseases": ""
+  },
+  "B 5": {
+    "name": "vitamin B5",
+    "uses": " is necessary for our bodies to produce hormones, and its also needed for growth.",
+    "sources": "You can find vitamin B5 in vegetables of the cabbage family, such as broccoli and kale, as well as in avocado. In addition, whole-grain cereals, potatoes, dairy, and organ meats are good sources.",
+    "diseases": ""
+  },
+  "B 6": {
+    "name": "vitamin B6",
+    "uses": "build new red blood cells, reduce risk of heart diseases",
+    "sources": "Bananas, Beans, Beef liver, Bran, Brown rice, Carrots, Cheese, Chicken, Fortified ready-to-eat cereal, Lentils, Milk",
+    "diseases": ""
+  },
+  "B 9": {
+    "name": "vitamin B9, also known as folic acid",
+    "uses": "necessary for the body's growth and development. Pregnant women should take good amount of this vitamin.  vital to a baby's health and development.",
+    "sources": "Naturally occurring folate is found in many sources, including dark-green leafy vegetables, asparagus, brussels sprouts, oranges, nuts, beans, and peas. ",
+    "diseases": ""
+  },
+  "B 12": {
+    "name": "Vitamin B12",
+    "uses": "Vitamin B12 is essential for building blood cells and maintaining healthy nerve cells in the body. ",
+    "sources": "Natural sources rich in vitamin B12 are dairy products, fish, meat, and — in particular — beef liver and clams. This type of vitamin B can also be found in fortified items like breakfast cereals and nutritional yeast. The B12 vitamin is not abundantly available from plant products, making B12 deficiency a legitimate concern for vegans. ",
+    "diseases": ""
+  },
+  "C": {
+    "name": "Vitamin C",
+    "uses": " the body also uses vitamin C to make skin, tendons, ligaments and blood vessels. It also uses this vitamin to repair and maintain cartilage, bones and teeth, to heal wounds and to form scar tissue.",
+    "sources": "Sources with the most vitamin C are fresh, raw cantaloupes, citrus fruits, kiwis, mangos, papayas, pineapples, strawberries, raspberries, blueberries, watermelon and cranberries. ed and green peppers, spinach, cabbage, cauliflower, turnip greens and other leafy greens, tomatoes, potatoes, broccoli, winter squash and Brussels sprouts are other good sources of vitamin C. ",
+    "diseases": "Not getting enough of this vitamin can cause easy bruising, gingivitis and bleeding gums, dry and splitting hair, rough, dry, scaly skin, a decreased wound-healing rate, nosebleeds and a decreased ability to ward off infection"
+  },
+  "D": {
+    "name": "Vitamin D",
+    "uses": "Helps the body absorb calcium, which creates healthy bones and teeth.",
+    "sources": "Fortified cereals, Fish liver oils, Fortified milk and dairy products (cheese, yogurt, butter, and cream) and sunlight.",
+    "diseases": ""
+  },
+  "E": {
+    "name": "Vitamin E",
+    "uses": "Helps to combat free radicals, which can damage our cells. Vitamin E plays an important role in the production of hormone-like substances called prostaglandins, which are responsible for regulating a variety of body processes, such as blood pressure and muscle contraction.",
+    "sources": "It's found in nuts and seeds, green leafy vegetables, corn, asparagus, and wheat germ. Oils (safflower, corn, and sunflower) Dark green vegetables (spinach, broccoli, asparagus, turnip greens)",
+    "diseases": ""
+  },
+  "K": {
+    "name": "Vitamiin K",
+    "uses": "Vitamin K is known as the “blood-clotting vitamin” for its important role in healing wounds. Vitamin K also plays an important role in bone health and wound healing.  ",
+    "sources": "Bacteria in the gastrointestinal tract naturally make vitamin K. While our bodies produce some Vitamin K, it can also be found in vegetables like cauliflower and cabbage.",
+    "diseases": ""
+  }
 }
