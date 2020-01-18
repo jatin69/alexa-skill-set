@@ -1,6 +1,7 @@
-# alexa-skills-kit
+# Alexa-skills-kit
 
 Getting started with Alexa Skills kit.
+[ASK SDK now in v2](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/)
 
 ## useful links
 

@@ -1,0 +1,10 @@
+# facts
+
+Now there is nothing unknown as such, about the corruption in India. The corruption in India has its roots in history as well.
+
+Not many people would know this but what we consider today as corruption was a common practice in Maratha empire. Nana Fadanvis [the real brain in Peshwa regime] used to accept gifts from others for taking up their issues to the chair i.e. Peshwa. This fact was known to everybody including the Peshwe and was an accepted practice. Today, if an MP demands money to raise questions in the house, it is considered unethical and so corrupt.
+
+None less but, M K Gandhi [God in Indian politics] himself was frustrated in 1937 and had proposed dissolution of the party owing to the corruption within the party. He also had expressed his desire to resign from the party but the other leaders strongly opposed and convinced him not to do so. [needless to mention that they succeeded in their efforts and Gandhi continued his pervasive presence in Indian National Congress].
+People think that generally the ruling political party is the most corrupt party, however, many a times it is better not to occupy any position and continue remaining a pressure group. These pressure groups pressurize the minority government and make fortune out of it. Ruling party is answerable to the public however, such small political parties, with their small number members, can blackmail the ruling party for their continued support and make money.
+
+Generally the term corruption is meant for monetary malpractices, however, if you look at it from a broader perspective, misusing the power and even not using the power, whether for appeasement for certain class of people or otherwise, is also corruption in my personal opinion. There are many issues concerning law and order which were raised at the parliament during J M Nehru regime but he ignored them. For a rape incidence in Maharashtra, Senapati Bapat had to start heavy protest against Nehru to make him listen and take corrective action in the state.

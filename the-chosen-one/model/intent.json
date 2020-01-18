@@ -1,0 +1,34 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "the chosen one",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GetNewFactIntent",
+                    "slots": [],
+                    "samples": [
+                        "who's the chosen one",
+                        "what's the chosen",
+                        "one more",
+                        "tell me a fact",
+                        "get me a new fact",
+                        "tell me the chosen one"
+                    ]
+                }
+            ],
+            "types": []
+        }
+    }
+}
